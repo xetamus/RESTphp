@@ -108,10 +108,13 @@ $data = array( 'status' => $GLOBALS['HTTP_OK'] );
 The API is designed in such a way as to allow production code to easily be plugged into the api by simply implementing the REST function and handling the different HTTP methods within that function based on the functionality that already exists (GET, POST, PUT, DELETE).
 
 
-## Testing
-All of the unit tests are written using PHPUnit. More information about PHPUnit can be found here at https://phpunit.de .
+ Testing
+---------
+All of the unit tests are written using PHPUnit. More information about PHPUnit can be found via the PHPUnit website:
 
-I've included the set-up instructions from the PHPUnit getting started guide (https://phpunit.de/getting-started.html)
+> https://phpunit.de
+
+I've included the set-up instructions from the PHPUnit getting started guide (https://phpunit.de/getting-started.html).
 
 - wget https://phar.phpunit.de/phpunit.phar
 - chmod +x phpunit.phar
@@ -119,20 +122,31 @@ I've included the set-up instructions from the PHPUnit getting started guide (ht
 - phpunit --version
 
 If you receive the following error:
-PHP Warning:  realpath(): open_basedir restriction in effect. File(/usr/local/bin/phpunit) is not within the allowed path(s): (/srv/http/:/home/:/tmp/:/usr/share/pear/:/usr/share/webapps/) in /usr/local/bin/phpunit on line 3
+> PHP Warning:  realpath(): open_basedir restriction in effect. File(/usr/local/bin/phpunit) is not within the allowed path(s): (/srv/http/:/home/:/tmp/:/usr/share/pear/:/usr/share/webapps/) in /usr/local/bin/phpunit on line 3
 
-it can be fixed by adding /usr/local/bin to the open_basedir parameter in the php.ini file (lives in /etc/php).
+It can be fixed by adding /usr/local/bin to the open_basedir parameter in the php.ini file (lives in /etc/php).
 
-The following error
+```
+open_basedir = /srv/http/:/home/:/tmp/:/usr/share/pear/:/usr/share/webapps/:/usr/local/bin/
+```
 
-PHP Fatal error:  Class 'Phar' not found in /usr/local/bin/phpunit on line 714
+If you recieve the following error:
+> PHP Fatal error:  Class 'Phar' not found in /usr/local/bin/phpunit on line 714
 
-can be fixed by uncommenting the extension=phar.so line in the php.ini file. 
+It can be fixed by uncommenting the extension=phar.so line in the php.ini file.
 
-A note for those who have never used PHPUnit before: test functions must be named test<Something> to be picked up by PHPUnit.
- 
-autoload is used to include all libs necessary for the tests (this could potentially be split out to multiple files, but by including any libs up front we can run through every test simultaneously. Individual autoload files are included in the testing subdirectories.
+```
+extension=phar.so
+```
 
-Running tests:
+> A note for those who have never used PHPUnit before: test functions must be named test<Something> to be picked up by PHPUnit.
+
+###### Running tests:
+```bash
 phpunit -v --tap --bootstrap autoload.php tests/ (Run full testsuite from root directory)
-phpunit --bootstrap autoload.php fibonacciTest.php (Run an individual test from its own subdirectory)
+phpunit -v --tap --bootstrap autoload.php fibonacciTest.php (Run the fibonacci class testsuite from the tests/fibonacci directory)
+```
+> Running with the --tap will give output in the Test Anything Protocol output, which is handy because otherwise output is only displayed on error. This allows us to see the progress of all tests and also let's us see that the tests we planned are actually being run.
+ 
+###### autoload
+The autoload.php file in root is used to include all libs necessary for the entire testsuite. Individual autoload files are included in the testing subdirectories to run the individual test suites.
