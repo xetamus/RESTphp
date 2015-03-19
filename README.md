@@ -90,7 +90,7 @@ array( status  => HTTP_STATUS,
 
 or
 
-```
+```php
 array( status => ERROR_STATUS,
        error  => array( message => ' ') )
 ```
