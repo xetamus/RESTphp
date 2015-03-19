@@ -7,9 +7,7 @@ http://serveraddress/api/v1/fibonacci/<n>
 Where \<n\> is a numeric value > 0
 
 
-==============
- Requirements
-==============
+## Requirements
 - PHP
 - Apache
 - mod_rewrite
@@ -18,37 +16,38 @@ Where \<n\> is a numeric value > 0
 *** Note: Everything was tested and developed using Linux, and any provided instruction will assume you are using Linux. RESTphul should work on Windows though if your Apache and module configurations are correct. ***
 
 
-==============
- Installation
-==============
-symlink the mods_available/rewrite.load file to the mods_enabled directory
+## Installation
+Install Apache and PHP, making sure mod_rewrite and mod_php are also installed for Apache.
+
+Enable mod_rewrite if it isnt' already. I won't go into detail about this because instruction will vary based on how your Apache configs are set up.
+
+Copy the contents of the www/ directory to your webservers DocumentRoot directory (usually /var/www or /srv/http). DocumentRoot can usually be found in the apache.conf or httpd.conf file. 
+
+The URI passing is done via the .htaccess file in the root directory and to work properly the AllowOverride All must be set in the httpd.conf or the apache.conf file. The following must be added in your DocumentRoot config block (It could be set to None, which will keep the URI redirection from working):
+
+    AllowOverride All
+    
+
+Add the following to your configuration file if it isn't already there:
+
+    <Files ".ht*">
+        Require all denied
+    </Files>
+
+It is also a good idea to go ahead and disallow access to the lib directory by adding the following to your configuration file:
+
+<Directory "/<DocumentRoot>/lib">
+    deny from all
+</Directory>
+
+Where <DocumentRoot> is the path to the web servers root directory.
+
+Fire up or restart your Apache server if it isn't already running and you should be able to make requests using the new api:
+
+    http://server/api/v1/fibonacci/5
 
 
-The URI passing is done via the .htaccess file in the root directory and to
-work properly the following config changes must be made:
-    AllowOverride All must be set in the <Directory /> block of the httpd.conf
-    or the apache.conf file
-
-    Disallow access to .ht files with the following block:
-        <Files ".ht*">
-            Require all denied
-        </Files>
-
-
-It is also a good idea to go ahead and disallow access to the lib directory
-by adding the following to your configuration file (<Document_Root> should be 
-replaced with your servers root http directory, will be defined as DocumentRoot
-in the main apache config file):
-    <Directory <Document_Root>/lib>
-        Order deny, allow
-        deny from all
-    </Directory>
-
-
-
-=======
- Usage
-=======
+## Usage
 The API will redirect all traffic to the index.php file to process the users 
 request. If a user tries to access this page directly, they will get the proper
 error response and message. The same thing will currently happen if the verb is
@@ -97,9 +96,7 @@ n number of outputs in the sequence. [ 0 ] for 1, [ 0, 1 ] for 2, [ 0, 1, 1 ]
 for 3, etc...
 
 
-=========
- Testing
-=========
+## Testing
 All of the unit tests are written using PHPUnit. More information about PHPUnit can be found here at https://phpunit.de .
 
 I've included the set-up instructions from the PHPUnit getting started guide (https://phpunit.de/getting-started.html)

@@ -17,7 +17,7 @@ class fibonacciEndpointTest extends PHPUnit_Framework_TestCase {
         $API->processRequest();
 
         $this->assertEquals(
-            '{"status":200,"0":{"message":[0,1,1]}}',
+            '{"status":200,"message":[0,1,1]}',
             $API->response
         );
     }
