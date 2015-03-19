@@ -1,53 +1,59 @@
-# RESTphul
+ RESTphul
+==========
 
-A PHP REST API implementation. RESTphul will allow a user to plug their current PHP objects to expose a REST interface to end users by adding a simple REST function. This function should take care of handling the proper HTTP response requested by the user. A fibonacci class implementation has been provided which given an input, n, will return a fibonacci sequence with n number of elements. This class shows a sample of implementing the REST function and handling request and argument parsing. Upon installation, the fibonacci endpoint will be ready to use and can be queried using the following API call:
+A PHP REST API implementation. RESTphul will allow a user to plug their current PHP objects to expose a REST interface to end users by adding a simple REST function. This function should take care of handling the proper HTTP response requested by the user. 
 
-http://serveraddress/api/v1/fibonacci/<n>
+A fibonacci class implementation has been provided which given an input, n, will return a fibonacci sequence with n number of elements. This class shows a sample of implementing the REST function and handling request and argument parsing. Upon installation, the fibonacci endpoint will be ready to use and can be queried using the following API call:
+
+>   http://serveraddress/api/v1/fibonacci/<n>
 
 Where \<n\> is a numeric value > 0
 
 
-## Requirements
+ Requirements
+--------------
 - PHP
 - Apache
 - mod_rewrite
 - mod_php
 
-*** Note: Everything was tested and developed using Linux, and any provided instruction will assume you are using Linux. RESTphul should work on Windows though if your Apache and module configurations are correct. ***
+###### *** Note: Everything was tested and developed using Linux, and any provided instruction will assume you are using Linux. RESTphul should work on Windows though if your Apache and module configurations are correct. ***
 
 
-## Installation
-Install Apache and PHP, making sure mod_rewrite and mod_php are also installed for Apache.
+ Installation
+--------------
+Install Apache and PHP using your distros package manager. You should make sure mod_rewrite and mod_php are also installed, though this should be the case if a package manager is used for installation.
 
-Enable mod_rewrite if it isnt' already. I won't go into detail about this because instruction will vary based on how your Apache configs are set up.
+Enable mod_rewrite if necessary. I won't go into detail about this because instruction will vary based on how your Apache configs are set up.
 
-Copy the contents of the www/ directory to your webservers DocumentRoot directory (usually /var/www or /srv/http). DocumentRoot can usually be found in the apache.conf or httpd.conf file. 
+The URI passing is done via the .htaccess file in the root directory and to work properly the AllowOverride All must be set in the httpd.conf or the apache.conf file. The following must be added in your DocumentRoot config block (It could be set to None by default, which will keep the URI redirection from working):
 
-The URI passing is done via the .htaccess file in the root directory and to work properly the AllowOverride All must be set in the httpd.conf or the apache.conf file. The following must be added in your DocumentRoot config block (It could be set to None, which will keep the URI redirection from working):
-
-    AllowOverride All
+>   AllowOverride All
     
+Add the following to your configuration file if it isn't already there to deny users from accessing .ht* files:
 
-Add the following to your configuration file if it isn't already there:
-
-    <Files ".ht*">
-        Require all denied
-    </Files>
+>   <Files ".ht*">
+>       Require all denied
+>   </Files>
 
 It is also a good idea to go ahead and disallow access to the lib directory by adding the following to your configuration file:
 
-<Directory "/<DocumentRoot>/lib">
-    deny from all
-</Directory>
+>   <Directory "/<DocumentRoot>/lib">
+>       deny from all
+>   </Directory>
 
 Where <DocumentRoot> is the path to the web servers root directory.
 
+Copy the contents of the www/ directory to your webservers DocumentRoot directory (usually /var/www or /srv/http). DocumentRoot can usually be found in the apache.conf or httpd.conf file. 
+
 Fire up or restart your Apache server if it isn't already running and you should be able to make requests using the new api:
+>   http://server/api/v1/fibonacci/5
 
-    http://server/api/v1/fibonacci/5
+This should return the following message:
+>   {"status":200,"message":[0,1,1,2,3]}
 
-
-## Usage
+ Usage
+-------
 The API will redirect all traffic to the index.php file to process the users 
 request. If a user tries to access this page directly, they will get the proper
 error response and message. The same thing will currently happen if the verb is
@@ -55,8 +61,15 @@ not a GET or the API is called incorrectly.
 
 
 When a new API object is created, a response will be returned if there are any
-errors in the URI.	
+errors in the URI. The following code is used in index.php to handle this:
 
+> $API = new restAPI($GET[request]);
+>
+> if ( !$API->response ) {
+>    $API->processRequest();
+> }
+>
+> echo $API->response(); 
 
 Assumption: Leaving it up to the endpoint class to deal with the REQUEST_METHOD
 properly and return the proper response. The class should have a REST function
