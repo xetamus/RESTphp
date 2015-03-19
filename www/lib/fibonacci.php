@@ -48,7 +48,7 @@ class fibonacci {
             } else {
                 $response = array(
                     'status' => $GLOBALS['HTTP_OK'],
-                    array ( 'message' => $result )
+                    'message' => $result
                 );
             }
         } else {

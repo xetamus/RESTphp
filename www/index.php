@@ -3,10 +3,10 @@ require "lib/restAPI.php";
 
 $API = new restAPI($_GET['request']);
 
-if ( $API->response ) {
-    echo $API->response;
-} else {
+if ( !$API->response ) {
     $API->processRequest();
 }
+
+echo $API->response;
 
 ?>
