@@ -5,7 +5,7 @@ A PHP REST API implementation. RESTphul will allow a user to plug their current 
 
 A fibonacci class implementation has been provided which given an input, n, will return a fibonacci sequence with n number of elements. This class shows a sample of implementing the REST function and handling request and argument parsing. Upon installation, the fibonacci endpoint will be ready to use and can be queried using the following API call:
 
->   http://serveraddress/api/v1/fibonacci/<n>
+>   http://serveraddress/api/v1/fibonacci/\<n\>
 
 Where \<n\> is a numeric value > 0
 
@@ -28,19 +28,23 @@ Enable mod_rewrite if necessary. I won't go into detail about this because instr
 
 The URI passing is done via the .htaccess file in the root directory and to work properly the AllowOverride All must be set in the httpd.conf or the apache.conf file. The following must be added in your DocumentRoot config block (It could be set to None by default, which will keep the URI redirection from working):
 
->   AllowOverride All
+   AllowOverride All
     
 Add the following to your configuration file if it isn't already there to deny users from accessing .ht* files:
 
->   <Files ".ht*">
->       Require all denied
->   </Files>
+```
+<Files ".ht*">
+    Require all denied
+</Files>
+```
 
 It is also a good idea to go ahead and disallow access to the lib directory by adding the following to your configuration file:
 
->   <Directory "/<DocumentRoot>/lib">
->       deny from all
->   </Directory>
+```
+<Directory "/<DocumentRoot>/lib">
+    deny from all
+</Directory>
+```
 
 Where <DocumentRoot> is the path to the web servers root directory.
 
@@ -52,61 +56,56 @@ Fire up or restart your Apache server if it isn't already running and you should
 This should return the following message:
 >   {"status":200,"message":[0,1,1,2,3]}
 
+
  Usage
 -------
-The API will redirect all traffic to the index.php file to process the users 
-request. If a user tries to access this page directly, they will get the proper
-error response and message. The same thing will currently happen if the verb is
-not a GET or the API is called incorrectly.
+The API will redirect all traffic to the index.php file to process the users request. If a user tries to access this page directly, they will get the proper error response and message. The same thing should happen if the API is called incorrectly.
 
+When a new API object is created, a response will be returned if there are any errors in the URI. The following code is used in index.php to handle this:
 
-When a new API object is created, a response will be returned if there are any
-errors in the URI. The following code is used in index.php to handle this:
+```php
+$API = new restAPI($_GET['request']);
 
-> $API = new restAPI($GET[request]);
->
-> if ( !$API->response ) {
->    $API->processRequest();
-> }
->
-> echo $API->response(); 
+if ( !$API->response ) {
+    $API->processRequest();
+}
 
-Assumption: Leaving it up to the endpoint class to deal with the REQUEST_METHOD
-properly and return the proper response. The class should have a REST function
-that will be called by the API and performs whatever method the user requested.
-It should take 2 parameters, the request method and an args array. Argument 
-validation is left up to the class.
+echo $API->response(); 
+```
+
+It's left up to the endpoint class to deal with the REQUEST_METHOD properly and return the proper response. The class should have a REST function which is what will be called by the API and performs whatever method the user requested. It should take 2 parameters $method and $args, which are the method called by which the user called the endpoint (GET, POST, PUT, DELETE) and any args passed in. Argument validation should obviously be taken care of by the class as well.
+
+```php
+public function REST ($method, $args) {
+    ...
+}
+```
 
 Output from the REST function of the class should be in the following form:
+
+```php
 array( status  => HTTP_STATUS,
        message => array( ) )
+```
 
 or
 
+```
 array( status => ERROR_STATUS,
        error  => array( message => ' ') )
+```
 
-The output MUST include an HTTP status and could potentially return the wrong
-status to the user otherwise. If no status is defined and no error string is 
-found, the API will default to 200 OK status. If an error string is found a 
-generic 500 INTERNAL SERVER ERROR will be returned (which helps NOONE).
-
-
-Why the API is designed this way. This will allow production code to easily be
-plugged into the api by simply implementing the REST function and handling 
-the different HTTP methods within that function based on the functionality that already exists (GET, POST, PUT, DELETE).
-
+The output MUST include an HTTP status and could potentially return the wrong status to the user. If no status is defined and no error string is found, the API will default to 200 OK status. If an error string is found a generic 500 INTERNAL SERVER ERROR will be returned (which helps NOONE).
 
 Check httpCodes.php for a list of known HTTP return statuses. These can be used by requiring the library and using the $GLOBALS variable:
 
+```
 require_once "httpCodes.php";
 # This will set our status to a success. 200 (OK)
 $data = array( 'status' => $GLOBALS['HTTP_OK'] ); 
+```
 
-
-For fibonacci, assumed that 0 was a negative number since we wanted to return
-n number of outputs in the sequence. [ 0 ] for 1, [ 0, 1 ] for 2, [ 0, 1, 1 ] 
-for 3, etc...
+The API is designed in such a way as to allow production code to easily be plugged into the api by simply implementing the REST function and handling the different HTTP methods within that function based on the functionality that already exists (GET, POST, PUT, DELETE).
 
 
 ## Testing
