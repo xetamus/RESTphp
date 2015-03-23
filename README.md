@@ -10,6 +10,23 @@ A fibonacci class implementation has been provided which given an input, n, will
 Where \<n\> is a numeric value > 0
 
 
+ Vagrant
+---------
+There is a Vagrantfile included (which uses a virtualbox provider), for a VM already running apache+php with the proper configuration, and the current version of RESTphul. This can be used for trying out RESTphul without having to go through all of the following installation and configuration steps.
+
+Just run the following command in the directory containing the Vagrantfile:
+
+```
+vagrant up
+```
+
+Once the VM comes up you should be able to navigate to 192.168.33.10 (you can define a different address using the Vagrantfile if you like) and begin making api calls.
+
+```
+http://192.168.33.10/api/v1/fibonacci/5
+```
+
+
  Requirements
 --------------
 - PHP
